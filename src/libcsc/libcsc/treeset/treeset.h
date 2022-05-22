@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <iterator>
 
 namespace my_set {
 
@@ -180,6 +181,21 @@ namespace my_set {
             node->parent = y;
         }
 
+        void printTree(const Node *node) {
+            if (node == nil) {
+                return;
+            }
+            printTree(node->left);
+            char color = node->color == 'R' ? 'R' : 'B';
+            std::cout << color << " key: " << node->key << '\n';
+            printTree(node->right);
+        }
+
+    public:
+        Node *getRoot() const {
+            return root_;
+        }
+
         Node *getMin(Node *node) const {
             while (node->left != nil) {
                 node = node->left;
@@ -194,21 +210,55 @@ namespace my_set {
             return node;
         }
 
-        Node *getRoot() const {
-            return root_;
-        }
-
-        void printTree(const Node *node) {
-            if (node == nil) {
-                return;
+        Node *increment(Node *node) {
+            if (node->right != nil) {
+                node = node->right;
+                while (node->left != nil)
+                    node = node->left;
+            } else {
+                Node *y = node->parent;
+                while (node == y->right) {
+                    node = y;
+                    y = y->parent;
+                }
+                if (node->right != y)
+                    node = y;
             }
-            printTree(node->left);
-            char color = node->color == 'R' ? 'R' : 'B';
-            std::cout << color << " key: " << node->key << '\n';
-            printTree(node->right);
+            return node;
         }
 
-    public:
+        class Iterator {
+            friend TreeSet;
+
+        private:
+            Node *ptr = nullptr;
+
+        public:
+            Iterator() = default;
+
+            using iterator_category = std::input_iterator_tag;
+            using value_type = int;
+            using difference_type = std::ptrdiff_t;
+            using pointer = int *;
+            using reference = int &;
+
+            bool operator==(Iterator other) {
+                return ptr == other.ptr;
+            }
+
+            bool operator!=(Iterator other) {
+                return ptr != other.ptr;
+            }
+
+            int &operator*() const {
+                return ptr->key;
+            }
+
+            int *operator->() const {
+                return &ptr->key;
+            }
+        };
+
         TreeSet() : nil(new Node()) {
             root_ = nil;
         }
@@ -288,7 +338,7 @@ namespace my_set {
             }
 
             Node *node = nullptr;
-            Node * y = z;
+            Node *y = z;
             char y_color = y->color;
             if (z->left == nil) {
                 node = z->right;
