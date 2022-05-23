@@ -58,3 +58,19 @@ TEST(contains, true) {
     auto res = set.contains(4);
     ASSERT_EQ(true, res);
 }
+
+TEST(constructor, move) {
+    my_set::TreeSet set;
+    set.insert(4);
+
+    my_set::TreeSet newSet = my_set::TreeSet(std::move(set));
+    ASSERT_EQ(1, newSet.size());
+}
+
+TEST(constructor, copy) {
+    my_set::TreeSet set;
+    set.insert(4);
+
+    my_set::TreeSet newSet = my_set::TreeSet(set);
+    ASSERT_EQ(set.size(), newSet.size());
+}

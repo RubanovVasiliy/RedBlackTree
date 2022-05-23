@@ -196,7 +196,7 @@ namespace my_set {
         Node *getRoot() const { return root_; }
 
         Node *getMin(Node *node) const {
-            if (node->left == nullptr) {
+            if (node == nullptr || node->left == nullptr) {
                 return nil_;
             }
             while (node->left != nil_) {
@@ -283,10 +283,28 @@ namespace my_set {
             root_ = nil_;
         }
 
+        TreeSet(const TreeSet &other) : nil_(new Node()) {
+            root_ = nil_;
+
+            for (auto it = other.begin(); it != other.end(); ++it) {
+                this->insert(*it);
+            }
+        }
+
+        TreeSet(TreeSet &&other) noexcept: root_(other.root_), nil_(other.nil_),
+                                           size_(other.size_) {
+            other.nil_ = nullptr;
+            other.root_ = nullptr;
+            other.size_ = 0;
+        }
+
+        ~TreeSet() {
+            clear();
+        }
+
         void clear() {
-            while (getRoot() != nil_) {
-                Node *node = getMin(root_);
-                remove(node->key);
+            for (auto it = this->begin(); it != this->end(); it++) {
+                this->remove(*it);
             }
             delete nil_;
         }
