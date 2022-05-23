@@ -3,26 +3,58 @@
 #include <vector>
 #include <set>
 
+TEST(foreach, null) {
+    my_set::TreeSet set;
 
-TEST(first, first) {
+    for (auto it = set.begin(); it != set.end(); it++) {}
+    ASSERT_EQ(0, set.size());
+}
+
+TEST(foreach, one_element) {
+    my_set::TreeSet set;
+    set.insert(1);
+
+    for (auto it = set.begin(); it != set.end(); it++) {}
+
+    ASSERT_EQ(1, set.size());
+}
+
+TEST(foreach, full_tree) {
     my_set::TreeSet set;
     std::vector items = {7, 2, 6, 4, 5, 3, -1, 0};
     for (auto &i: items) {
         set.insert(i);
     }
-    std::cout << set.size() << '\n';
-    set.remove(2);
-    set.print();
-    std::cout << "contains: " << set.contains(4) << '\n';
-    std::cout << set.size() << '\n';
 
-    auto node = set.getMin(set.getRoot());
-
-    for (std::size_t i = 0; i < set.size() - 1; i++) {
-        std::cout << node->key << '\n';
-        node = set.increment(node);
+    for (auto it = set.begin(); it != set.end(); it++) {
+        set.remove(*it);
     }
-    set.clear();
 
     ASSERT_EQ(0, set.size());
+}
+
+TEST(remove, false) {
+    my_set::TreeSet set;
+    auto res = set.remove(4);
+    ASSERT_EQ(false, res);
+}
+
+TEST(remove, true) {
+    my_set::TreeSet set;
+    set.insert(4);
+    auto res = set.remove(4);
+    ASSERT_EQ(true, res);
+}
+
+TEST(contains, false) {
+    my_set::TreeSet set;
+    auto res = set.contains(4);
+    ASSERT_EQ(false, res);
+}
+
+TEST(contains, true) {
+    my_set::TreeSet set;
+    set.insert(4);
+    auto res = set.contains(4);
+    ASSERT_EQ(true, res);
 }

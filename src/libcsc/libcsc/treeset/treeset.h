@@ -21,11 +21,13 @@ namespace my_set {
 
     private:
         Node *root_;
-        Node *nil;
+
+        Node *nil_;
+
         std::size_t size_ = 0;
 
         Node *findHelper(Node *node, int key) const {
-            if (node == nil || key == node->key) {
+            if (node == nil_ || key == node->key) {
                 return node;
             }
             if (key < node->key) {
@@ -148,7 +150,7 @@ namespace my_set {
         void leftRotate(Node *node) {
             Node *y = node->right;
             node->right = y->left;
-            if (y->left != nil) {
+            if (y->left != nil_) {
                 y->left->parent = node;
             }
             y->parent = node->parent;
@@ -166,7 +168,7 @@ namespace my_set {
         void rightRotate(Node *node) {
             Node *y = node->left;
             node->left = y->right;
-            if (y->right != nil) {
+            if (y->right != nil_) {
                 y->right->parent = node;
             }
             y->parent = node->parent;
@@ -182,7 +184,7 @@ namespace my_set {
         }
 
         void printTree(const Node *node) {
-            if (node == nil) {
+            if (node == nil_) {
                 return;
             }
             printTree(node->left);
@@ -191,88 +193,105 @@ namespace my_set {
             printTree(node->right);
         }
 
-    public:
-        Node *getRoot() const {
-            return root_;
-        }
+        Node *getRoot() const { return root_; }
 
         Node *getMin(Node *node) const {
-            while (node->left != nil) {
+            if (node->left == nullptr) {
+                return nil_;
+            }
+            while (node->left != nil_) {
                 node = node->left;
             }
             return node;
         }
 
         Node *getMax(Node *node) const {
-            while (node->right != nil) {
+            if (node->right == nullptr) {
+                return nil_;
+            }
+            while (node->right != nil_) {
                 node = node->right;
             }
             return node;
         }
 
-        Node *increment(Node *node) {
-            if (node->right != nil) {
-                node = node->right;
-                while (node->left != nil)
-                    node = node->left;
-            } else {
-                Node *y = node->parent;
-                while (node == y->right) {
-                    node = y;
-                    y = y->parent;
-                }
-                if (node->right != y)
-                    node = y;
-            }
-            return node;
-        }
+        Node *getNil() const { return nil_; }
+
+    public:
 
         class Iterator {
             friend TreeSet;
 
         private:
             Node *ptr = nullptr;
+            Node *nil = nullptr;
+
+            Iterator(Node *ptr, Node *nil) : ptr(ptr), nil(nil) {}
 
         public:
-            Iterator() = default;
-
             using iterator_category = std::input_iterator_tag;
             using value_type = int;
             using difference_type = std::ptrdiff_t;
-            using pointer = int *;
-            using reference = int &;
+            using pointer = value_type *;
+            using reference = value_type &;
 
-            bool operator==(Iterator other) {
-                return ptr == other.ptr;
+            Iterator() = default;
+
+            ~Iterator() = default;
+
+            bool operator==(Iterator other) { return ptr == other.ptr; }
+
+            bool operator!=(Iterator other) { return ptr != other.ptr; }
+
+            int &operator*() const { return ptr->key; }
+
+            int *operator->() const { return &ptr->key; }
+
+            Iterator &operator++() {
+                if (ptr->right != nil) {
+                    ptr = ptr->right;
+                    while (ptr->left != nil)
+                        ptr = ptr->left;
+                } else {
+                    if (ptr->parent == nullptr) {
+                        ptr = nil;
+                        return *this;
+                    }
+                    Node *y = ptr->parent;
+                    while (ptr == y->right) {
+                        ptr = y;
+                        y = y->parent;
+                        if (ptr->parent == nullptr) {
+                            ptr = nil;
+                            return *this;
+                        }
+                    }
+                    if (ptr->right != y)
+                        ptr = y;
+                }
+                return *this;
             }
 
-            bool operator!=(Iterator other) {
-                return ptr != other.ptr;
-            }
-
-            int &operator*() const {
-                return ptr->key;
-            }
-
-            int *operator->() const {
-                return &ptr->key;
+            Iterator operator++(int) {
+                Iterator it = *this;
+                ++*this;
+                return it;
             }
         };
 
-        TreeSet() : nil(new Node()) {
-            root_ = nil;
+        TreeSet() : nil_(new Node()) {
+            root_ = nil_;
         }
 
         void clear() {
-            while (getRoot() != nil) {
+            while (getRoot() != nil_) {
                 Node *node = getMin(root_);
                 remove(node->key);
             }
+            delete nil_;
         }
 
-        std::size_t size() const {
-            return size_;
-        }
+        std::size_t size() const { return size_; }
 
         bool contains(const int key) const {
             return findHelper(root_, key)->key == key;
@@ -281,14 +300,14 @@ namespace my_set {
         void insert(int key) {
             Node *tmp = new Node();
             tmp->key = key;
-            tmp->left = nil;
-            tmp->right = nil;
+            tmp->left = nil_;
+            tmp->right = nil_;
             tmp->color = 'R';
 
             Node *y = nullptr;
             Node *node = root_;
 
-            while (node != nil) {
+            while (node != nil_) {
                 y = node;
                 if (tmp->key < node->key) {
                     node = node->left;
@@ -321,8 +340,8 @@ namespace my_set {
 
         bool remove(int key) {
             Node *root = getRoot();
-            Node *z = nil;
-            while (root != nil) {
+            Node *z = nil_;
+            while (root != nil_) {
                 if (root->key == key) {
                     z = root;
                 }
@@ -333,17 +352,17 @@ namespace my_set {
                 }
             }
 
-            if (z == nil) {
+            if (z == nil_) {
                 return false;
             }
 
             Node *node = nullptr;
             Node *y = z;
             char y_color = y->color;
-            if (z->left == nil) {
+            if (z->left == nil_) {
                 node = z->right;
                 transplant(z, z->right);
-            } else if (z->right == nil) {
+            } else if (z->right == nil_) {
                 node = z->left;
                 transplant(z, z->left);
             } else {
@@ -373,5 +392,9 @@ namespace my_set {
         void print() {
             printTree(root_);
         }
+
+        Iterator begin() const { return Iterator(getMin(getRoot()), getNil()); }
+
+        Iterator end() const { return Iterator(getNil(), getNil()); }
     };
 } // namespace my_set
