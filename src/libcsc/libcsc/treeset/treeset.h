@@ -300,13 +300,39 @@ namespace my_set {
 
         ~TreeSet() {
             clear();
+            delete nil_;
+        }
+
+        TreeSet &operator=(const TreeSet &other) {
+            if (this == &other) {
+                return *this;
+            }
+
+            clear();
+            for (auto it = other.begin(); it != other.end(); ++it) {
+                this->insert(*it);
+            }
+            return *this;
+        }
+
+        TreeSet &operator=(TreeSet &&other) noexcept {
+            if (this == &other) {
+                return *this;
+            }
+
+            nil_ = other.nil_;
+            root_ = other.root_;
+            size_ = other.size_;
+            other.nil_ = nullptr;
+            other.root_ = nullptr;
+            other.size_ = 0;
+            return *this;
         }
 
         void clear() {
             for (auto it = this->begin(); it != this->end(); it++) {
                 this->remove(*it);
             }
-            delete nil_;
         }
 
         std::size_t size() const { return size_; }

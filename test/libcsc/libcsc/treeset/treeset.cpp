@@ -74,3 +74,21 @@ TEST(constructor, copy) {
     my_set::TreeSet newSet = my_set::TreeSet(set);
     ASSERT_EQ(set.size(), newSet.size());
 }
+
+TEST(assignment_operator, move) {
+    my_set::TreeSet set;
+    set.insert(1);
+    set.insert(5);
+
+    my_set::TreeSet newSet = std::move(set);
+    ASSERT_EQ(2, newSet.size());
+}
+
+TEST(assignment_operator, copy) {
+    my_set::TreeSet set;
+    set.insert(1);
+    set.insert(5);
+
+    my_set::TreeSet newSet = set;
+    ASSERT_EQ(set.size(), newSet.size());
+}
