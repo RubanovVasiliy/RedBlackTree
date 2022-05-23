@@ -5,13 +5,14 @@
 
 namespace my_set {
 
+    template <typename K>
     class TreeSet {
 
         struct Node {
             Node *parent = nullptr;
             Node *left = nullptr;
             Node *right = nullptr;
-            int key;
+            K key;
             char color = 'B';
 
             Node operator=(const Node &node) = delete;
@@ -26,7 +27,7 @@ namespace my_set {
 
         std::size_t size_ = 0;
 
-        Node *findHelper(Node *node, int key) const {
+        Node *findHelper(Node *node, K key) const {
             if (node == nil_ || key == node->key) {
                 return node;
             }
@@ -230,7 +231,7 @@ namespace my_set {
 
         public:
             using iterator_category = std::input_iterator_tag;
-            using value_type = int;
+            using value_type = K;
             using difference_type = std::ptrdiff_t;
             using pointer = value_type *;
             using reference = value_type &;
@@ -243,9 +244,9 @@ namespace my_set {
 
             bool operator!=(Iterator other) { return ptr != other.ptr; }
 
-            int &operator*() const { return ptr->key; }
+            K &operator*() const { return ptr->key; }
 
-            int *operator->() const { return &ptr->key; }
+            K *operator->() const { return &ptr->key; }
 
             Iterator &operator++() {
                 if (ptr->right != nil) {
@@ -337,11 +338,11 @@ namespace my_set {
 
         std::size_t size() const { return size_; }
 
-        bool contains(const int key) const {
+        bool contains(const K key) const {
             return findHelper(root_, key)->key == key;
         }
 
-        void insert(int key) {
+        void insert(K key) {
             Node *tmp = new Node();
             tmp->key = key;
             tmp->left = nil_;
@@ -382,7 +383,7 @@ namespace my_set {
             balanceInsert(tmp);
         }
 
-        bool remove(int key) {
+        bool remove(K key) {
             Node *root = getRoot();
             Node *z = nil_;
             while (root != nil_) {

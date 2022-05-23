@@ -4,14 +4,14 @@
 #include <set>
 
 TEST(foreach, null) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
 
     for (auto it = set.begin(); it != set.end(); it++) {}
     ASSERT_EQ(0, set.size());
 }
 
 TEST(foreach, one_element) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(1);
 
     for (auto it = set.begin(); it != set.end(); it++) {}
@@ -20,13 +20,14 @@ TEST(foreach, one_element) {
 }
 
 TEST(foreach, full_tree) {
-    my_set::TreeSet set;
-    std::vector items = {7, 2, 6, 4, 5, 3, -1, 0};
+    my_set::TreeSet<std::string> set;
+    std::vector<std::string> items = {"John", "Lisa", "Ann", "Emmy"};
     for (auto &i: items) {
         set.insert(i);
     }
 
     for (auto it = set.begin(); it != set.end(); it++) {
+        std::cout << *it << ' ';
         set.remove(*it);
     }
 
@@ -34,33 +35,33 @@ TEST(foreach, full_tree) {
 }
 
 TEST(remove, false) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     auto res = set.remove(4);
     ASSERT_EQ(false, res);
 }
 
 TEST(remove, true) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(4);
     auto res = set.remove(4);
     ASSERT_EQ(true, res);
 }
 
 TEST(contains, false) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     auto res = set.contains(4);
     ASSERT_EQ(false, res);
 }
 
 TEST(contains, true) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(4);
     auto res = set.contains(4);
     ASSERT_EQ(true, res);
 }
 
 TEST(constructor, move) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(4);
 
     my_set::TreeSet newSet = my_set::TreeSet(std::move(set));
@@ -68,7 +69,7 @@ TEST(constructor, move) {
 }
 
 TEST(constructor, copy) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(4);
 
     my_set::TreeSet newSet = my_set::TreeSet(set);
@@ -76,7 +77,7 @@ TEST(constructor, copy) {
 }
 
 TEST(assignment_operator, move) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(1);
     set.insert(5);
 
@@ -85,7 +86,7 @@ TEST(assignment_operator, move) {
 }
 
 TEST(assignment_operator, copy) {
-    my_set::TreeSet set;
+    my_set::TreeSet<int> set;
     set.insert(1);
     set.insert(5);
 
