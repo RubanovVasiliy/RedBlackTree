@@ -5,14 +5,14 @@
 
 namespace my_set {
 
-    template <typename K>
+    template<typename K>
     class TreeSet {
 
         struct Node {
             Node *parent = nullptr;
             Node *left = nullptr;
             Node *right = nullptr;
-            K key;
+            K key = K();
             char color = 'B';
 
             Node operator=(const Node &node) = delete;
@@ -197,7 +197,7 @@ namespace my_set {
         Node *getRoot() const { return root_; }
 
         Node *getMin(Node *node) const {
-            if (node == nullptr || node->left == nullptr) {
+            if (node == nil_) {
                 return nil_;
             }
             while (node->left != nil_) {
@@ -207,7 +207,7 @@ namespace my_set {
         }
 
         Node *getMax(Node *node) const {
-            if (node->right == nullptr) {
+            if (node == nil_) {
                 return nil_;
             }
             while (node->right != nil_) {
@@ -331,8 +331,8 @@ namespace my_set {
         }
 
         void clear() {
-            for (auto it = this->begin(); it != this->end(); it++) {
-                this->remove(*it);
+            while (size_ > 0) {
+                this->remove(getRoot()->key);
             }
         }
 

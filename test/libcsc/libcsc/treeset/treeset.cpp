@@ -1,12 +1,22 @@
 #include <treeset/treeset.h>
 #include <gtest/gtest.h>
 #include <vector>
-#include <set>
 
-TEST(foreach, null) {
-    my_set::TreeSet<int> set;
+TEST(foreach, full_tree) {
+    my_set::TreeSet<std::string> set;
+    std::vector<std::string> items = {"John", "Lisa", "Ann", "Emmy"};
+    for (auto &i: items) {
+        set.insert(i);
+    }
 
-    for (auto it = set.begin(); it != set.end(); it++) {}
+    for (auto it = set.begin(); it != set.end(); it++) {
+        std::cout << *it << ' ';
+    }
+
+    for (auto it = items.begin(); it != items.end(); it++) {
+        set.remove(*it);
+    }
+
     ASSERT_EQ(0, set.size());
 }
 
@@ -19,18 +29,10 @@ TEST(foreach, one_element) {
     ASSERT_EQ(1, set.size());
 }
 
-TEST(foreach, full_tree) {
-    my_set::TreeSet<std::string> set;
-    std::vector<std::string> items = {"John", "Lisa", "Ann", "Emmy"};
-    for (auto &i: items) {
-        set.insert(i);
-    }
+TEST(foreach, null) {
+    my_set::TreeSet<int> set;
 
-    for (auto it = set.begin(); it != set.end(); it++) {
-        std::cout << *it << ' ';
-        set.remove(*it);
-    }
-
+    for (auto it = set.begin(); it != set.end(); it++) {}
     ASSERT_EQ(0, set.size());
 }
 
@@ -60,22 +62,6 @@ TEST(contains, true) {
     ASSERT_EQ(true, res);
 }
 
-TEST(constructor, move) {
-    my_set::TreeSet<int> set;
-    set.insert(4);
-
-    my_set::TreeSet newSet = my_set::TreeSet(std::move(set));
-    ASSERT_EQ(1, newSet.size());
-}
-
-TEST(constructor, copy) {
-    my_set::TreeSet<int> set;
-    set.insert(4);
-
-    my_set::TreeSet newSet = my_set::TreeSet(set);
-    ASSERT_EQ(set.size(), newSet.size());
-}
-
 TEST(assignment_operator, move) {
     my_set::TreeSet<int> set;
     set.insert(1);
@@ -91,5 +77,21 @@ TEST(assignment_operator, copy) {
     set.insert(5);
 
     my_set::TreeSet newSet = set;
+    ASSERT_EQ(set.size(), newSet.size());
+}
+
+TEST(constructor, move) {
+    my_set::TreeSet<int> set;
+    set.insert(4);
+
+    my_set::TreeSet newSet = my_set::TreeSet(std::move(set));
+    ASSERT_EQ(1, newSet.size());
+}
+
+TEST(constructor, copy) {
+    my_set::TreeSet<int> set;
+    set.insert(4);
+
+    my_set::TreeSet newSet = my_set::TreeSet(set);
     ASSERT_EQ(set.size(), newSet.size());
 }
